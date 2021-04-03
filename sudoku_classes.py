@@ -1,4 +1,4 @@
-from os import sys, system
+from os import sys
 import pygame
 from sudoku_consts import *
 
@@ -18,7 +18,7 @@ class Button:
     def draw(self, win):
         """Call while drawing the window on the instance to add it to the caption"""
         self.coord_x = ((WIDTH + GRID_WIDTH) / 2 + OFFSET + WIDTH) / 2 - BUTTON_WIDTH / 2
-        self.coord_y = (HEIGHT - BUTTON_HEIGHT) / 2 + (Button.all.index(self) - (len(Button.all) - 1) / 2) * BUTTON_HEIGHT * 1.7 + TASKBAR
+        self.coord_y = (HEIGHT - BUTTON_HEIGHT) / 2 + (Button.all.index(self) - (len(Button.all) - 1) / 2) * BUTTON_HEIGHT * 1.7
         pygame.draw.rect(win, BUTTON_COLOR, pygame.Rect(self.coord_x, self.coord_y, BUTTON_WIDTH, BUTTON_HEIGHT), border_radius=15)
 
         msg = FONT20.render(self.msg, False, BUTTON_FONT_COLOR)
@@ -127,9 +127,8 @@ class Square:
  
         while self.value < 10:
             for event in pygame.event.get():
-                if event.type == pygame.MOUSEBUTTONDOWN:
-                    if WIDTH - TASKBAR < event.pos[0] < WIDTH and 0 < event.pos[1] < TASKBAR:
-                        sys.exit()
+                if event.type == pygame.QUIT:
+                    sys.exit()
             
             pygame.display.update()
 

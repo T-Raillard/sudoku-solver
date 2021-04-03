@@ -32,8 +32,7 @@ class Button:
 class Square:
     """A square designed to fit in a nine by nine sudoku grid of squares"""
 
-    all = [[]]
-    all_unordered = []
+    all = []
 
     def __init__(self, x, y, row, column):
         """Must pass coordinates and their index(row, column) in oreder to draw properly"""
@@ -48,12 +47,8 @@ class Square:
         self.color = SQUARE_COLOR
         self.number_color = SQUARE_FONT_COLOR
 
-        # append the instance to all and all_unordered when created
-        if len(Square.all[-1]) % 9 == 0 and len(Square.all[-1]) != 0:
-            Square.all.append([self])
-        else:
-            Square.all[-1].append(self)
-        Square.all_unordered.append(self)
+        # append the instance to all when created
+        Square.all.append(self)
 
     def __repr__(self):
         """Prettify for debugging"""
@@ -73,21 +68,10 @@ class Square:
         """Return an array of instances which are "seen" by this instance"""
         rv = []
 
-        # look in the row
-        for square in Square.all[self.row]:
+        for square in Square.all:
             if square != self and square.value != "":
-                rv.append(square)
-        
-        # look in the column
-        for row in Square.all:
-            square = row[self.column]
-            if square != self and square.value != "":
-                rv.append(square)
-        
-        # look in the 3x3 square
-        for square in Square.all_unordered:
-            if square != self and square.nine_square == self.nine_square and square.value != "":
-                rv.append(square)
+                if square.row == self.row or square.column == self.column or square.nine_square == self.nine_square:
+                    rv.append(square)
 
         return rv
 

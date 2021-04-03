@@ -1,4 +1,5 @@
 from os import sys, environ
+import copy
 import pygame
 from sudoku_classes import Square, Button
 from sudoku_consts import *
@@ -8,6 +9,9 @@ WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("    Sudoku Solver")
 icon = pygame.image.load(r'C:\Users\Tristan Raillard\Documents\Python\pygame\assets\ksudoku_103845 (1).ico')
 pygame.display.set_icon(icon)
+
+# initiate a list of last 10 state of the grid for the "back" button
+saved = []
 
 # create all 81 squares
 border_offset_x = 0
@@ -24,7 +28,7 @@ for i in range(9):
         y = GRID_y + EXT_BORDER + j * (SQUARE_WIDTH + INN_BORDER) + border_offset_y
         Square(x, y, i, j)
 
-    border_offset_y = 0     
+    border_offset_y = 0  
 
 def main():
     """Main fonction, loops through every frame"""
@@ -66,7 +70,7 @@ def draw_window():
             pygame.draw.rect(WIN, INN_BORDER_COLOR, pygame.Rect(x, y, width, width))
 
     # squares
-    for square in Square.all_unordered:
+    for square in Square.all:
         square.draw(WIN)
 
     # buttons
@@ -78,7 +82,7 @@ def draw_window():
 def handle_click(x, y):
     """handles the event MOUSEBUTTONDOWN"""
     # unselect squares, then looks if clicked
-    for square in Square.all_unordered:
+    for square in Square.all:
         if square.check_clicked(x, y):
             square.selected = not square.selected
             square.color = SEL_SQUARE_COLOR if square.selected else SQUARE_COLOR
@@ -89,6 +93,8 @@ def handle_click(x, y):
     # looks if a button is clicked
     for button in Button.all:
         if button.check_clicked(x, y):
+            if button.msg != "BACK":
+                save()
             button.click()
 
 def handle_key(key):
@@ -102,27 +108,38 @@ def handle_key(key):
     except (ValueError, AssertionError):
         return
     # looks for a selected square and writes key in it
-    for square in Square.all_unordered:
+    for square in Square.all:
         if square.selected:
+            save()
             if key == "backspace":
                 square.clear()
             else:
                 square.write(key)
             return
 
-def back():
+def save():
+    """when a change is made, copies the former grid in saved"""
+    if len(saved) == 10:
+        saved.pop(0)
+    saved.append(copy.deepcopy(Square.all))
+
+def back(): 
     """Callback fonction for button Back"""
-    print("back called !")
+    if len(saved) == 0:
+        return
+    former = saved.pop()
+    for i in range(81):
+       Square.all[i] = former[i]
 
 def clear():
     """Callback fonction for button Clear"""
-    for square in Square.all_unordered:
+    for square in Square.all:
         square.clear()
 
 def check():
     """Callback fonction for button Check"""
     all_legal = True
-    for square in Square.all_unordered:
+    for square in Square.all:
         if not square.legal:
             square.number_color = RED
             all_legal = False
@@ -135,17 +152,14 @@ def solve():
         return
  
     # set impossible values
-    unsolved = Square.all_unordered.copy()
-    for square in Square.all_unordered:
+    unsolved = Square.all.copy()
+    for square in Square.all:
         if square.value != "":
             unsolved.remove(square)
     
     # launch recursiveness !
     if unsolved[0].solve(unsolved, WIN):
         print("solved !")
-
-    
-
 
 if __name__ == "__main__":
     main()

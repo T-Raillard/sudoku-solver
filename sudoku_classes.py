@@ -1,9 +1,6 @@
+from os import sys, system
 import pygame
 from sudoku_consts import *
-
-pygame.font.init()
-FONT = pygame.font.Font(r'C:\Users\Tristan Raillard\Documents\Python\pygame\assets\Roboto-Regular.ttf', 30)
-FONT20 = pygame.font.Font(r'C:\Users\Tristan Raillard\Documents\Python\pygame\assets\Roboto-Regular.ttf', 20)
 
 class Button:
     """Buttons on the right of the screen; all is an array of all instances"""
@@ -20,8 +17,8 @@ class Button:
     
     def draw(self, win):
         """Call while drawing the window on the instance to add it to the caption"""
-        self.coord_x = WIDTH / 2 - OFFSET * 2.5
-        self.coord_y = (HEIGHT - BUTTON_HEIGHT) / 2 + (Button.all.index(self) - (len(Button.all) - 1) / 2) * BUTTON_HEIGHT * 1.7
+        self.coord_x = ((WIDTH + GRID_WIDTH) / 2 + OFFSET + WIDTH) / 2 - BUTTON_WIDTH / 2
+        self.coord_y = (HEIGHT - BUTTON_HEIGHT) / 2 + (Button.all.index(self) - (len(Button.all) - 1) / 2) * BUTTON_HEIGHT * 1.7 + TASKBAR
         pygame.draw.rect(win, BUTTON_COLOR, pygame.Rect(self.coord_x, self.coord_y, BUTTON_WIDTH, BUTTON_HEIGHT), border_radius=15)
 
         msg = FONT20.render(self.msg, False, BUTTON_FONT_COLOR)
@@ -48,7 +45,6 @@ class Square:
         self.value = ""
         self.legal = True
         self.selected = False
-        self.impossible_values = []
         self.color = SQUARE_COLOR
         self.number_color = SQUARE_FONT_COLOR
 
@@ -66,7 +62,7 @@ class Square:
     def draw(self, win):
         """Call while drawing the window on the instance to add it to the caption"""
         pygame.draw.rect(win, self.color, pygame.Rect(self.coord_x, self.coord_y, SQUARE_WIDTH, SQUARE_WIDTH))
-        value = FONT.render(str(self.value), False, self.number_color)
+        value = FONT30.render(str(self.value), False, self.number_color)
         win.blit(value, (self.coord_x + (SQUARE_WIDTH - value.get_rect().width) / 2, self.coord_y + (SQUARE_WIDTH - value.get_rect().height) / 2))
 
     def check_clicked(self, x, y):
@@ -97,6 +93,7 @@ class Square:
 
     def write(self, value):
         """Change the value of a square and check if it is a legal move"""
+        self.clear()
         self.value = value
         
         for square in self.seen():
@@ -124,32 +121,35 @@ class Square:
     def solve(self, unsolved, WIN):
         """recursively called to solve the puzzle"""
         index = unsolved.index(self)
+
+        if self.value == "":
+            self.value = 1
  
-        for sol in range(1, 10):
+        while self.value < 10:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    sys.exit()
+            
             pygame.display.update()
-            pygame.time.wait(5)
 
-            self.value = sol
             imp = [x.value for x in self.seen()]
-            imp.extend(list(self.impossible_values))
-
-            if sol in imp:
+            if self.value in imp:
                 self.number_color = RED
                 self.draw(WIN) 
             else:
                 self.number_color = GREEN
                 self.draw(WIN)
-                for square in unsolved[index + 1:]:
-                    square.impossible_values = []
                 break
             
-        if sol == 9 and self.number_color == RED:
+            self.value += 1
+
+            
+        if self.value == 10:
             self.value = ""
-            self.draw(WIN)
             former = unsolved[index - 1]
-            former.impossible_values.append(former.value)
+            former.value += 1
             return former.solve(unsolved, WIN)
-        elif Square.all_unordered.index(self) == 80:
+        elif index + 1 == len(unsolved):
             return True
         else:
-            return unsolved[index + 1].solve(unsolved, WIN)  
+            return unsolved[index + 1].solve(unsolved, WIN)

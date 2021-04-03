@@ -1,9 +1,10 @@
+from os import sys, environ
 import pygame
 from sudoku_classes import Square, Button
 from sudoku_consts import *
 
 # initialize the window
-WIN = pygame.display.set_mode((WIDTH, HEIGHT))
+WIN = pygame.display.set_mode((WIDTH, HEIGHT + TASKBAR), pygame.NOFRAME)
 pygame.display.set_caption("    Sudoku Solver")
 icon = pygame.image.load(r'C:\Users\Tristan Raillard\Documents\Python\pygame\assets\ksudoku_103845 (1).ico')
 pygame.display.set_icon(icon)
@@ -33,14 +34,10 @@ def main():
     solve_button = Button("SOLVE", solve)
 
     clock = pygame.time.Clock()
-    run = True
-    while run:
+    while True:
         clock.tick(FPS)
 
         for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                run = False
-            
             if event.type == pygame.MOUSEBUTTONDOWN:
                 handle_click(*event.pos)
             
@@ -51,8 +48,16 @@ def main():
     
 def draw_window():
     """Called with each frame to draw the window"""
+    global off
     # background
     WIN.fill(BG_COLOR)
+
+    # TASKBAR
+    pygame.draw.rect(WIN, EXT_BORDER_COLOR, pygame.Rect(0, 0, WIDTH, TASKBAR))
+    title = FONT20.render("SUDOKU SOLVER", False, BG_COLOR)
+    WIN.blit(title, (30, (TASKBAR - title.get_rect().height) / 2))
+    off = FONT30.render("x", False, BG_COLOR)
+    WIN.blit(off, (WIDTH - off.get_rect().width * 2, (TASKBAR - off.get_rect().height) / 2))
 
     # external border
     pygame.draw.rect(WIN, EXT_BORDER_COLOR, pygame.Rect(GRID_x, GRID_y, GRID_WIDTH, GRID_WIDTH))
@@ -77,6 +82,10 @@ def draw_window():
 
 def handle_click(x, y):
     """handles the event MOUSEBUTTONDOWN"""
+    # exits if clicked on the cross
+    if WIDTH - off.get_rect().width * 3 < x < WIDTH and 0 < y < TASKBAR:
+        sys.exit()
+
     # unselect squares, then looks if clicked
     for square in Square.all_unordered:
         if square.check_clicked(x, y):

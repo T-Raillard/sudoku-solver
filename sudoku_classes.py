@@ -102,8 +102,8 @@ class Square:
         self.legal = True
         self.number_color = SQUARE_FONT_COLOR
     
-    def solve(self, unsolved, WIN):
-        """recursively called to solve the puzzle"""
+    def solve(self, unsolved, WIN, pretty):
+        """called to solve the puzzle using backtracking"""
         index = unsolved.index(self)
 
         if self.value == "":
@@ -114,15 +114,18 @@ class Square:
                 if event.type == pygame.QUIT:
                     sys.exit()
             
-            pygame.display.update()
+            if pretty:
+                pygame.display.update()
 
             imp = [x.value for x in self.seen()]
             if self.value in imp:
-                self.number_color = RED
-                self.draw(WIN) 
+                if pretty:
+                    self.number_color = RED
+                    self.draw(WIN) 
             else:
                 self.number_color = GREEN
-                self.draw(WIN)
+                if pretty:
+                    self.draw(WIN)
                 break
             
             self.value += 1
@@ -130,10 +133,10 @@ class Square:
             
         if self.value == 10:
             self.value = ""
+            if pretty:
+                self.draw(WIN)
             former = unsolved[index - 1]
             former.value += 1
-            return former.solve(unsolved, WIN)
-        elif index + 1 == len(unsolved):
-            return True
+            return index - 1
         else:
-            return unsolved[index + 1].solve(unsolved, WIN)
+            return index + 1

@@ -13,6 +13,9 @@ pygame.display.set_icon(icon)
 # initiate a list of last 10 state of the grid for the "back" button
 saved = []
 
+# initiate the PRETTY variables
+PRETTY = True
+
 # create all 81 squares
 border_offset_x = 0
 border_offset_y = 0
@@ -28,7 +31,7 @@ for i in range(9):
         y = GRID_y + EXT_BORDER + j * (SQUARE_WIDTH + INN_BORDER) + border_offset_y
         Square(x, y, i, j)
 
-    border_offset_y = 0  
+    border_offset_y = 0
 
 def main():
     """Main fonction, loops through every frame"""
@@ -77,10 +80,32 @@ def draw_window():
     for button in Button.all:
         button.draw(WIN)
 
+    # "pretty" checkbox
+    pygame.draw.rect(WIN, PRETTY_CIRCLE_COLOR, pygame.Rect(
+        ((WIDTH + GRID_WIDTH) / 2 + OFFSET + WIDTH) / 2 - BUTTON_WIDTH + 10,
+        HEIGHT / 2 + (len(Button.all) / 2) * BUTTON_HEIGHT * 2 - 10,
+        20,
+        20,
+    ), border_radius=10)
+    if PRETTY:
+        pygame.draw.rect(WIN, PRETTY_CIRCLE_SEL_COLOR, pygame.Rect(
+            ((WIDTH + GRID_WIDTH) / 2 + OFFSET + WIDTH) / 2 - BUTTON_WIDTH + 12,
+            HEIGHT / 2 + (len(Button.all) / 2) * BUTTON_HEIGHT * 2 - 8,
+            16,
+            16,
+        ), border_radius=8)
+    pretty_txt = FONT20.render("show solving", False, BUTTON_COLOR)
+    WIN.blit(pretty_txt, (
+        ((WIDTH + GRID_WIDTH) / 2 + OFFSET + WIDTH) / 2 - BUTTON_WIDTH / 2,
+        HEIGHT / 2 + (len(Button.all) / 2) * BUTTON_HEIGHT * 2 - pretty_txt.get_rect().height / 2
+    ))
+
     pygame.display.update()
 
 def handle_click(x, y):
     """handles the event MOUSEBUTTONDOWN"""
+    global PRETTY
+
     # unselect squares, then looks if clicked
     for square in Square.all:
         if square.check_clicked(x, y):
@@ -96,6 +121,10 @@ def handle_click(x, y):
             if button.msg != "BACK":
                 save()
             button.click()
+    
+    # looks if the checkbox is clicked
+    if (((WIDTH + GRID_WIDTH) / 2 + OFFSET + WIDTH) / 2 - BUTTON_WIDTH + 10) < x < (((WIDTH + GRID_WIDTH) / 2 + OFFSET + WIDTH) / 2 - BUTTON_WIDTH + 30) and (HEIGHT / 2 + (len(Button.all) / 2) * BUTTON_HEIGHT * 2 - 10) < y < (HEIGHT / 2 + (len(Button.all) / 2) * BUTTON_HEIGHT * 2 + 10):
+        PRETTY = not PRETTY
 
 def handle_key(key):
     """handles the event KEYDOWN"""
@@ -157,9 +186,10 @@ def solve():
         if square.value != "":
             unsolved.remove(square)
     
-    # launch recursiveness !
-    if unsolved[0].solve(unsolved, WIN):
-        print("solved !")
+    index = 0
+    while index < len(unsolved):
+        index = unsolved[index].solve(unsolved, WIN, PRETTY)
+    print("solved !")
 
 if __name__ == "__main__":
     main()

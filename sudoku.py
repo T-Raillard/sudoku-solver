@@ -48,7 +48,6 @@ def main():
     
 def draw_window():
     """Called with each frame to draw the window"""
-    global off
     # background
     WIN.fill(BG_COLOR)
 
@@ -83,7 +82,7 @@ def draw_window():
 def handle_click(x, y):
     """handles the event MOUSEBUTTONDOWN"""
     # exits if clicked on the cross
-    if WIDTH - off.get_rect().width * 3 < x < WIDTH and 0 < y < TASKBAR:
+    if WIDTH - TASKBAR < x < WIDTH and 0 < y < TASKBAR:
         sys.exit()
 
     # unselect squares, then looks if clicked

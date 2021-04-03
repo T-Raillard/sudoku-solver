@@ -127,8 +127,9 @@ class Square:
  
         while self.value < 10:
             for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    sys.exit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if WIDTH - TASKBAR < event.pos[0] < WIDTH and 0 < event.pos[1] < TASKBAR:
+                        sys.exit()
             
             pygame.display.update()
 

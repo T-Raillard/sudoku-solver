@@ -131,7 +131,19 @@ def check():
 
 def solve():
     """Callback fonction for button Solve"""
-    pass
+    if not check():
+        return
+ 
+    # set impossible values
+    unsolved = Square.all_unordered.copy()
+    for square in Square.all_unordered:
+        if square.value != "":
+            unsolved.remove(square)
+    
+    # launch recursiveness !
+    if unsolved[0].solve(unsolved, WIN):
+        print("solved !")
+
     
 
 

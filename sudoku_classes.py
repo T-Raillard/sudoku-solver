@@ -48,7 +48,7 @@ class Square:
         self.value = ""
         self.legal = True
         self.selected = False
-        self.impossible_values = set()
+        self.impossible_values = []
         self.color = SQUARE_COLOR
         self.number_color = SQUARE_FONT_COLOR
 
@@ -116,12 +116,40 @@ class Square:
 
                 square.legal = now_legal
                 square.number_color = SQUARE_FONT_COLOR if now_legal else square.number_color
-                print('*')
                         
         self.value = ""
         self.legal = True
         self.number_color = SQUARE_FONT_COLOR
     
     def solve(self, unsolved, WIN):
-        pass
-        
+        """recursively called to solve the puzzle"""
+        index = unsolved.index(self)
+ 
+        for sol in range(1, 10):
+            pygame.display.update()
+            pygame.time.wait(5)
+
+            self.value = sol
+            imp = [x.value for x in self.seen()]
+            imp.extend(list(self.impossible_values))
+
+            if sol in imp:
+                self.number_color = RED
+                self.draw(WIN) 
+            else:
+                self.number_color = GREEN
+                self.draw(WIN)
+                for square in unsolved[index + 1:]:
+                    square.impossible_values = []
+                break
+            
+        if sol == 9 and self.number_color == RED:
+            self.value = ""
+            self.draw(WIN)
+            former = unsolved[index - 1]
+            former.impossible_values.append(former.value)
+            return former.solve(unsolved, WIN)
+        elif Square.all_unordered.index(self) == 80:
+            return True
+        else:
+            return unsolved[index + 1].solve(unsolved, WIN)  

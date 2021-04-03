@@ -7,7 +7,7 @@ from sudoku_consts import *
 # initialize the window
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption("    Sudoku Solver")
-icon = pygame.image.load(r'C:\Users\Tristan Raillard\Documents\Python\pygame\assets\ksudoku_103845 (1).ico')
+icon = pygame.image.load(r'C:\Users\Tristan Raillard\Documents\Python\pygame\sudoku\sudoku.ico')
 pygame.display.set_icon(icon)
 
 # initiate a list of last 10 state of the grid for the "back" button

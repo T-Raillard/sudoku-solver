@@ -29,5 +29,5 @@ GREEN = (21, 230, 80)
 
 # fonts
 pygame.font.init()
-FONT30 = pygame.font.Font(r'C:\Users\Tristan Raillard\Documents\Python\pygame\assets\Roboto-Regular.ttf', 30)
-FONT20 = pygame.font.Font(r'C:\Users\Tristan Raillard\Documents\Python\pygame\assets\Roboto-Regular.ttf', 20)
+FONT30 = pygame.font.Font(r'C:\Users\Tristan Raillard\Documents\Python\pygame\sudoku\Roboto-Regular.ttf', 30)
+FONT20 = pygame.font.Font(r'C:\Users\Tristan Raillard\Documents\Python\pygame\sudoku\Roboto-Regular.ttf', 20)

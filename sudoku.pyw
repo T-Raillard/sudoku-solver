@@ -6,7 +6,7 @@ from sudoku_consts import *
 
 # initialize the window
 WIN = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("    Sudoku Solver")
+pygame.display.set_caption("    SUDOKU SOLVER")
 icon = pygame.image.load(r'C:\Users\Tristan Raillard\Documents\Python\pygame\sudoku\sudoku.ico')
 pygame.display.set_icon(icon)
 
